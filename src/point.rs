@@ -2,7 +2,7 @@ use crate::coord::Coord;
 use crate::float_eq::f32_are_eq;
 use crate::tuple::Tuple;
 use crate::vector::Vector;
-use std::ops::Sub;
+use std::ops::{Add, Sub};
 
 #[derive(Debug)]
 pub struct Point(Tuple);
@@ -43,6 +43,14 @@ impl Sub<Vector> for Point {
     }
 }
 
+impl Add<Vector> for Point {
+    type Output = Point;
+
+    fn add(self, rhs: Vector) -> Self::Output {
+        (self.0 + rhs.into()).into()
+    }
+}
+
 impl PartialEq for Point {
     fn eq(&self, other: &Point) -> bool {
         f32_are_eq(self.x(), other.x())
@@ -60,6 +68,18 @@ impl PartialEq<Tuple> for Point {
     }
 }
 
+impl From<Tuple> for Point {
+    fn from(tuple: Tuple) -> Self {
+        Point::new(tuple.x(), tuple.y(), tuple.z())
+    }
+}
+
+impl From<Point> for Tuple {
+    fn from(value: Point) -> Self {
+        Tuple::new(value.x(), value.y(), value.z(), 1.)
+    }
+}
+
 #[cfg(test)]
 mod point_tests {
     use crate::point::Point;
@@ -69,5 +89,17 @@ mod point_tests {
     fn new_point_equals_tuple_with_w_1() {
         let p = Point::new(4., -4., 3.);
         assert_eq!(p, Tuple::new(4., -4., 3., 1.));
+    }
+
+    #[test]
+    fn can_create_from_tuple() {
+        let p: Point = Tuple::new(1., 2., 3., 4.).into();
+        assert_eq!(p, Point::new(1., 2., 3.));
+    }
+
+    #[test]
+    fn can_create_tuple_from_point() {
+        let p: Tuple = Point::new(1., 2., 3.).into();
+        assert_eq!(p, Tuple::new(1., 2., 3., 1.));
     }
 }

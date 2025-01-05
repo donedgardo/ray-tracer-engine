@@ -2,7 +2,7 @@ use crate::coord::Coord;
 use crate::float_eq::f32_are_eq;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Tuple(f32, f32, f32, f32);
 
 impl Tuple {
@@ -232,7 +232,6 @@ mod tuple_arithmetic_tests {
     use crate::tuple::Tuple;
     use crate::vector::Vector;
     use rstest::rstest;
-    use std::ops::Mul;
 
     #[test]
     fn tuples_can_be_added() {

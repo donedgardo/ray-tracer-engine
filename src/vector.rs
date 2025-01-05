@@ -1,9 +1,10 @@
 use crate::coord::Coord;
 use crate::float_eq::f32_are_eq;
+use crate::point::Point;
 use crate::tuple::Tuple;
-use std::ops::{Mul, Neg, Sub};
+use std::ops::{Add, Mul, Neg, Sub};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Vector(Tuple);
 
 impl Vector {
@@ -67,11 +68,33 @@ impl Sub for Vector {
     }
 }
 
+impl Add for Vector {
+    type Output = Vector;
+
+    fn add(self, rhs: Vector) -> Self::Output {
+        (self.0 + rhs.0).into()
+    }
+}
+impl Add<Point> for Vector {
+    type Output = Point;
+
+    fn add(self, rhs: Point) -> Self::Output {
+        (self.0 + rhs.into()).into()
+    }
+}
+
 impl Mul for Vector {
     type Output = f32;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        self.0 * rhs.0
+        self.0 * rhs.0.clone()
+    }
+}
+impl Mul<f32> for Vector {
+    type Output = Vector;
+
+    fn mul(self, rhs: f32) -> Self::Output {
+        (self.0 * rhs).into()
     }
 }
 impl Neg for Vector {
@@ -88,6 +111,12 @@ impl From<Tuple> for Vector {
     }
 }
 
+impl From<Vector> for Tuple {
+    fn from(value: Vector) -> Self {
+        Tuple::new(value.x(), value.y(), value.z(), 0.0)
+    }
+}
+
 #[cfg(test)]
 mod vector_tests {
     use crate::tuple::Tuple;
@@ -97,5 +126,11 @@ mod vector_tests {
     fn new_vector_creates_tuple_with_w_0() {
         let v = Vector::new(4., -4., 3.);
         assert_eq!(v, Tuple::new(4., -4., 3., 0.));
+    }
+
+    #[test]
+    fn can_turn_into_tuple() {
+        let t: Tuple = Vector::new(4., -4., 3.).into();
+        assert_eq!(t, Tuple::new(4., -4., 3., 0.));
     }
 }
