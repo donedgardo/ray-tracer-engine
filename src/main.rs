@@ -2,6 +2,7 @@ use crate::coord::Coord;
 use crate::point::Point;
 use crate::vector::Vector;
 
+mod color;
 mod coord;
 mod float_eq;
 mod point;
@@ -18,7 +19,7 @@ struct Environment {
     gravity: Vector,
 }
 
-fn tick(proj: Projectile, env: Environment) -> Projectile {
+fn tick(proj: Projectile, env: &Environment) -> Projectile {
     let transform = proj.transform + proj.velocity;
     let velocity = proj.velocity + env.gravity + env.winds;
     return Projectile {
@@ -39,7 +40,7 @@ fn main() {
 
     let mut tick_count = 0;
     while proj.transform.y() > 0. {
-        proj = tick(proj, env.clone());
+        proj = tick(proj, &env);
         println!(
             "x:{}, y: {}, z: {}",
             proj.transform.x(),

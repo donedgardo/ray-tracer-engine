@@ -39,6 +39,10 @@ impl Tuple {
             self.w() / mag,
         )
     }
+
+    pub fn dot(&self, rhs: &Self) -> f32 {
+        self.x() * rhs.x() + self.y() * rhs.y() + self.z() * rhs.z() + self.w() * rhs.w()
+    }
 }
 
 impl Coord for Tuple {
@@ -91,14 +95,6 @@ impl Mul<f32> for Tuple {
             self.z() * rhs,
             self.w() * rhs,
         )
-    }
-}
-
-impl Mul for Tuple {
-    type Output = f32;
-
-    fn mul(self, rhs: Tuple) -> Self::Output {
-        self.x() * rhs.x() + self.y() * rhs.y() + self.z() * rhs.z() + self.w() * rhs.w()
     }
 }
 
@@ -333,7 +329,7 @@ mod tuple_arithmetic_tests {
     fn dot_product() {
         let a = Vector::new(1., 2., 3.);
         let b = Vector::new(2., 3., 4.);
-        assert!(f32_are_eq(a * b, 20.))
+        assert!(f32_are_eq(a.dot(&b), 20.))
     }
 
     #[test]

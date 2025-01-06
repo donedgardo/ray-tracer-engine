@@ -20,6 +20,10 @@ impl Vector {
         Self(self.0.normalize())
     }
 
+    pub fn dot(&self, rhs: &Vector) -> f32 {
+        self.0.dot(&rhs.0)
+    }
+
     pub fn cross(&self, rhs: &Vector) -> Self {
         Self::new(
             self.y() * rhs.z() - self.z() * rhs.y(),
@@ -83,13 +87,6 @@ impl Add<Point> for Vector {
     }
 }
 
-impl Mul for Vector {
-    type Output = f32;
-
-    fn mul(self, rhs: Self) -> Self::Output {
-        self.0 * rhs.0.clone()
-    }
-}
 impl Mul<f32> for Vector {
     type Output = Vector;
 
