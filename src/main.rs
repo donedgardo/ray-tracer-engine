@@ -2,10 +2,12 @@ use crate::coord::Coord;
 use crate::point::Point;
 use crate::vector::Vector;
 
+mod canvas;
 mod color;
 mod coord;
 mod float_eq;
 mod point;
+mod ppm_image;
 mod tuple;
 mod vector;
 

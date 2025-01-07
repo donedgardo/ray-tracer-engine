@@ -2,7 +2,7 @@ use crate::coord::Coord;
 use crate::tuple::Tuple;
 use std::ops::{Add, Mul, Sub};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Color(Tuple);
 
 impl Color {
