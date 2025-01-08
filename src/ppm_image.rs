@@ -18,23 +18,29 @@ impl PPM {
                 let color = canvas.pixel_at(x, y).unwrap();
                 row.push_str(Self::generate_x_row(canvas, x, &color).as_str());
             }
-            // TODO: Maybe extract its dividing by 70 chars per line making sure it doesn't split values
-            let row_char_count = row.chars().count();
-            if row_char_count > 70 {
-                for i in 0..=(row_char_count / 70) {
-                    let split_space = (67 * (i + 1)..=69 * (i + 1))
-                        .rev()
-                        .find(|mid| row.chars().nth(*mid) == Some(' '));
-                    if let Some(mid) = split_space {
-                        let (a, b) = row.split_at(mid + 1);
-                        row = format!("{}\n{}", a.trim_end_matches(' '), b.trim_end_matches(' '));
-                    }
-                }
-            }
+            row = Self::truncate_rows(&row, 70);
             body.push_str(&row);
         }
         body.push_str("\n");
         body
+    }
+
+    fn truncate_rows(row: &String, max_line_size: usize) -> String {
+        let mut truncated_rows = row.clone();
+        let row_char_count = row.chars().count();
+        if row_char_count > max_line_size {
+            for i in 1..=(row_char_count / max_line_size) {
+                let split_until = max_line_size - 1;
+                let split = &truncated_rows[..split_until * i];
+                let last_space_index = split.rfind(" ");
+                if let Some(mid) = last_space_index {
+                    let (a, b) = truncated_rows.split_at(mid + 1);
+                    truncated_rows =
+                        format!("{}\n{}", a.trim_end_matches(' '), b.trim_end_matches(' '));
+                }
+            }
+        }
+        truncated_rows
     }
 
     fn generate_x_row(canvas: &Canvas, x: u32, color: &&Color) -> String {
@@ -112,6 +118,7 @@ mod ppm_tests {
             }
         }
         let ppm = PPM::generate(&canvas);
+        println!("{}", ppm);
         let lines: Vec<_> = ppm.split("\n").collect();
         let pixel_data_output = lines[3..=6].join("\n");
         let expected_output =
