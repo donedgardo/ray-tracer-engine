@@ -88,10 +88,46 @@ impl Matrix4x4 {
 
     pub fn transpose(&self) -> Self {
         Self::new(
-            [0., 0., 0., 0.],
-            [0., 0., 0., 0.],
-            [0., 0., 0., 0.],
-            [0., 0., 0., 0.],
+            [
+                self.data[0][0],
+                self.data[1][0],
+                self.data[2][0],
+                self.data[3][0],
+            ],
+            [
+                self.data[0][1],
+                self.data[1][1],
+                self.data[2][1],
+                self.data[3][1],
+            ],
+            [
+                self.data[0][2],
+                self.data[1][2],
+                self.data[2][2],
+                self.data[3][2],
+            ],
+            [
+                self.data[0][3],
+                self.data[1][3],
+                self.data[2][3],
+                self.data[3][3],
+            ],
+        )
+    }
+
+    pub fn submatrix(&self, row: usize, col: usize) -> Matrix3x3 {
+        let mut data = Vec::with_capacity(3 * 3);
+        for y in 0..=3 {
+            for x in 0..=3 {
+                if y != row && x != col {
+                    data.push(self.data[y][x]);
+                }
+            }
+        }
+        Matrix3x3::new(
+            [data[0], data[1], data[2]],
+            [data[3], data[4], data[5]],
+            [data[6], data[7], data[8]],
         )
     }
 }
@@ -155,6 +191,22 @@ impl Matrix3x3 {
     pub fn new(r1: [f32; 3], r2: [f32; 3], r3: [f32; 3]) -> Self {
         Self { data: [r1, r2, r3] }
     }
+
+    pub fn submatrix(&self, row: usize, col: usize) -> Matrix2x2 {
+        let mut data = Vec::with_capacity(4);
+        for y in 0..=2 {
+            for x in 0..=2 {
+                if y != row && x != col {
+                    data.push(self.data[y][x]);
+                }
+            }
+        }
+        Matrix2x2::new([data[0], data[1]], [data[2], data[3]])
+    }
+
+    pub fn minor(&self, row: usize, col: usize) -> f32 {
+        self.submatrix(row, col).determinant()
+    }
 }
 
 impl PartialEq for Matrix3x3 {
@@ -179,6 +231,9 @@ struct Matrix2x2 {
 impl Matrix2x2 {
     pub fn new(r1: [f32; 2], r2: [f32; 2]) -> Self {
         Self { data: [r1, r2] }
+    }
+    pub fn determinant(&self) -> f32 {
+        self.data[0][0] * self.data[1][1] - self.data[0][1] * self.data[1][0]
     }
 }
 
@@ -322,7 +377,7 @@ mod matrix_tests {
 #[cfg(test)]
 mod matrix_arithmetics {
     use crate::tuple::Tuple;
-    use crate::Matrix4x4;
+    use crate::{Matrix2x2, Matrix3x3, Matrix4x4};
 
     #[test]
     fn multiplication_other_matrix() {
@@ -377,7 +432,6 @@ mod matrix_arithmetics {
     }
 
     #[test]
-    #[ignore]
     fn transposing_matrix() {
         let m = Matrix4x4::new(
             [0., 9., 3., 0.],
@@ -392,5 +446,42 @@ mod matrix_arithmetics {
             [0., 8., 3., 8.],
         );
         assert_eq!(m.transpose(), expected);
+    }
+
+    #[test]
+    fn transposing_identity_matrix() {
+        assert_eq!(Matrix4x4::identity().transpose(), Matrix4x4::identity());
+    }
+
+    #[test]
+    fn determinants_2x2() {
+        let m = Matrix2x2::new([1., 5.], [-3., 2.]);
+        assert_eq!(m.determinant(), 17.)
+    }
+
+    #[test]
+    fn sub_matrix_of_3x3() {
+        let m = Matrix3x3::new([1., 5., 0.], [-3., 2., 7.], [0., 6., -3.]);
+        assert_eq!(m.submatrix(0, 2), Matrix2x2::new([-3., 2.], [0., 6.]));
+    }
+
+    #[test]
+    fn sub_matrix_of_4x4() {
+        let m = Matrix4x4::new(
+            [-6., 1., 1., 6.],
+            [-8., 5., 8., 6.],
+            [-1., 0., 8., 2.],
+            [-7., 1., -1., 1.],
+        );
+        assert_eq!(
+            m.submatrix(2, 1),
+            Matrix3x3::new([-6., 1., 6.], [-8., 8., 6.], [-7., -1., 1.])
+        );
+    }
+
+    #[test]
+    fn minor_of_3x3() {
+        let m = Matrix3x3::new([3., 5., 0.], [2., -1., -7.], [6., -1., 5.]);
+        assert_eq!(m.minor(1, 0), 25.);
     }
 }
