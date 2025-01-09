@@ -207,6 +207,13 @@ impl Matrix3x3 {
     pub fn minor(&self, row: usize, col: usize) -> f32 {
         self.submatrix(row, col).determinant()
     }
+
+    pub fn cofactor(&self, row: usize, col: usize) -> f32 {
+        if (row + col) % 2 != 0 {
+            return -self.minor(row, col);
+        }
+        self.minor(row, col)
+    }
 }
 
 impl PartialEq for Matrix3x3 {
@@ -483,5 +490,12 @@ mod matrix_arithmetics {
     fn minor_of_3x3() {
         let m = Matrix3x3::new([3., 5., 0.], [2., -1., -7.], [6., -1., 5.]);
         assert_eq!(m.minor(1, 0), 25.);
+    }
+
+    #[test]
+    fn cofactor_of_3x3() {
+        let m = Matrix3x3::new([3., 5., 0.], [2., -1., -7.], [6., -1., 5.]);
+        assert_eq!(m.cofactor(0, 0), -12.);
+        assert_eq!(m.cofactor(1, 0), -25.);
     }
 }
