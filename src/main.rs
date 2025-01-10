@@ -148,6 +148,25 @@ impl Matrix4x4 {
         }
         det
     }
+
+    pub fn is_invertible(&self) -> bool {
+        self.determinant() != 0.
+    }
+
+    pub fn inverse(&self) -> Option<Self> {
+        if !self.is_invertible() {
+            return None;
+        }
+        let mut inverse = Self::identity();
+        let determinant = self.determinant();
+        for row in 0..4 {
+            for col in 0..4 {
+                let cofactor = self.cofactor(row, col);
+                inverse.data[col][row] = cofactor / determinant;
+            }
+        }
+        return Some(inverse);
+    }
 }
 
 impl PartialEq for Matrix4x4 {
@@ -547,5 +566,101 @@ mod matrix_arithmetics {
         assert_eq!(m.cofactor(0, 2), 210.);
         assert_eq!(m.cofactor(0, 3), 51.);
         assert_eq!(m.determinant(), -4071.);
+    }
+
+    #[test]
+    fn non_invertible_matrix() {
+        let m = Matrix4x4::new(
+            [6., 4., 4., 4.],
+            [5., 5., 7., 6.],
+            [4., -9., 3., -7.],
+            [9., 1., 7., -6.],
+        );
+        assert_eq!(m.determinant(), -2120.);
+        assert!(m.is_invertible());
+    }
+    #[test]
+    fn invertible_matrix() {
+        let m = Matrix4x4::new(
+            [-4., 2., -2., -3.],
+            [9., 6., 2., 6.],
+            [0., -5., 1., -5.],
+            [0., 0., 0., 0.],
+        );
+        assert_eq!(m.determinant(), 0.);
+        assert!(!m.is_invertible());
+    }
+
+    #[test]
+    fn inverse_of_matrix() {
+        let m = Matrix4x4::new(
+            [-5., 2., 6., -8.],
+            [1., -5., 1., 8.],
+            [7., 7., -6., -7.],
+            [1., -3., 7., 4.],
+        );
+        let b = m.inverse().unwrap();
+        assert_eq!(m.determinant(), 532.);
+        assert_eq!(m.cofactor(2, 3), -160.);
+        assert_eq!(b[3][2], -160. / 532.);
+        assert_eq!(m.cofactor(3, 2), 105.);
+        assert_eq!(b[2][3], 105. / 532.);
+        assert_eq!(
+            b,
+            Matrix4x4::new(
+                [0.21805, 0.45113, 0.24060, -0.04511],
+                [-0.80827, -1.45677, -0.44361, 0.52068],
+                [-0.07895, -0.22368, -0.05263, 0.19737],
+                [-0.52256, -0.81391, -0.30075, 0.30639]
+            )
+        );
+    }
+
+    #[test]
+    fn testing_inverse_matrix() {
+        let m = Matrix4x4::new(
+            [8., -5., 9., 2.],
+            [7., 5., 6., 1.],
+            [-6., 0., 9., 6.],
+            [-3., 0., -9., -4.],
+        );
+        let expected = Matrix4x4::new(
+            [-0.15385, -0.15385, -0.28205, -0.53846],
+            [-0.07692, 0.12308, 0.02564, 0.03077],
+            [0.35897, 0.35897, 0.43590, 0.92308],
+            [-0.69231, -0.69231, -0.76923, -1.92308],
+        );
+        assert_eq!(m.inverse(), Some(expected));
+        let m = Matrix4x4::new(
+            [9., 3., 0., 9.],
+            [-5., -2., -6., -3.],
+            [-4., 9., 6., 4.],
+            [-7., 6., 6., 2.],
+        );
+        let expected = Matrix4x4::new(
+            [-0.04074, -0.07778, 0.14444, -0.22222],
+            [-0.07778, 0.03333, 0.36667, -0.33333],
+            [-0.02901, -0.14630, -0.10926, 0.12963],
+            [0.17778, 0.06667, -0.26667, 0.33333],
+        );
+        assert_eq!(m.inverse(), Some(expected));
+    }
+
+    #[test]
+    fn multiplying_a_product_by_its_inverse() {
+        let a = Matrix4x4::new(
+            [3., -9., 7., 3.],
+            [3., -8., 2., -9.],
+            [-4., 4., 4., 1.],
+            [-6., 5., -1., 1.],
+        );
+        let b = Matrix4x4::new(
+            [8., 2., 2., 2.],
+            [3., -1., 7., 0.],
+            [7., 0., 5., 4.],
+            [6., -2., 0., 5.],
+        );
+        let c = a * b;
+        assert_eq!(c * b.inverse().unwrap(), a);
     }
 }
