@@ -130,6 +130,24 @@ impl Matrix4x4 {
             [data[6], data[7], data[8]],
         )
     }
+    pub fn minor(&self, row: usize, col: usize) -> f32 {
+        self.submatrix(row, col).determinant()
+    }
+
+    pub fn cofactor(&self, row: usize, col: usize) -> f32 {
+        if (row + col) % 2 != 0 {
+            return -self.minor(row, col);
+        }
+        self.minor(row, col)
+    }
+
+    pub fn determinant(&self) -> f32 {
+        let mut det = 0.;
+        for col in 0..4 {
+            det += self.data[0][col] * self.cofactor(0, col);
+        }
+        det
+    }
 }
 
 impl PartialEq for Matrix4x4 {
@@ -213,6 +231,14 @@ impl Matrix3x3 {
             return -self.minor(row, col);
         }
         self.minor(row, col)
+    }
+
+    pub fn determinant(&self) -> f32 {
+        let mut det = 0.;
+        for col in 0..3 {
+            det += self.data[0][col] * self.cofactor(0, col);
+        }
+        det
     }
 }
 
@@ -497,5 +523,29 @@ mod matrix_arithmetics {
         let m = Matrix3x3::new([3., 5., 0.], [2., -1., -7.], [6., -1., 5.]);
         assert_eq!(m.cofactor(0, 0), -12.);
         assert_eq!(m.cofactor(1, 0), -25.);
+    }
+
+    #[test]
+    fn determinant_of_3x3() {
+        let m = Matrix3x3::new([1., 2., 6.], [-5., 8., -4.], [2., 6., 4.]);
+        assert_eq!(m.cofactor(0, 0), 56.);
+        assert_eq!(m.cofactor(0, 1), 12.);
+        assert_eq!(m.cofactor(0, 2), -46.);
+        assert_eq!(m.determinant(), -196.);
+    }
+
+    #[test]
+    fn determinant_of_4x4() {
+        let m = Matrix4x4::new(
+            [-2., -8., 3., 5.],
+            [-3., 1., 7., 3.],
+            [1., 2., -9., 6.],
+            [-6., 7., 7., -9.],
+        );
+        assert_eq!(m.cofactor(0, 0), 690.);
+        assert_eq!(m.cofactor(0, 1), 447.);
+        assert_eq!(m.cofactor(0, 2), 210.);
+        assert_eq!(m.cofactor(0, 3), 51.);
+        assert_eq!(m.determinant(), -4071.);
     }
 }
