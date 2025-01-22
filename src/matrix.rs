@@ -1,6 +1,8 @@
 use crate::coord::Coord;
 use crate::float_eq::f32_are_eq;
+use crate::point::Point;
 use crate::tuple::Tuple;
+use crate::vector::Vector;
 use std::ops::{Index, Mul};
 
 #[derive(Debug, Clone, Copy)]
@@ -154,6 +156,34 @@ impl Mul<Tuple> for Matrix4x4 {
                 + self.data[row][3] * rhs.w()
         }
         Tuple::new(result[0], result[1], result[2], result[3])
+    }
+}
+
+impl Mul<Point> for Matrix4x4 {
+    type Output = Point;
+
+    fn mul(self, rhs: Point) -> Self::Output {
+        Point::from(self * Tuple::from(rhs))
+    }
+}
+
+impl Mul<Vector> for Matrix4x4 {
+    type Output = Vector;
+
+    fn mul(self, rhs: Vector) -> Self::Output {
+        rhs
+    }
+}
+
+struct Translation(Tuple);
+
+impl Translation {
+    pub fn new(x: f32, y: f32, z: f32) -> Matrix4x4 {
+        let mut tranlation = Matrix4x4::identity();
+        tranlation.data[0][3] = x;
+        tranlation.data[1][3] = y;
+        tranlation.data[2][3] = z;
+        tranlation
     }
 }
 
@@ -367,8 +397,11 @@ mod matrix_tests {
 
 #[cfg(test)]
 mod matrix_arithmetics {
-    use crate::matrix::{Matrix2x2, Matrix3x3, Matrix4x4};
+    use crate::matrix::{Matrix2x2, Matrix3x3, Matrix4x4, Translation};
+    use crate::point::Point;
     use crate::tuple::Tuple;
+    use crate::vector::Vector;
+    use std::ops::Mul;
 
     #[test]
     fn multiplication_other_matrix() {
@@ -601,5 +634,41 @@ mod matrix_arithmetics {
         );
         let c = a * b;
         assert_eq!(c * b.inverse().unwrap(), a);
+    }
+
+    #[test]
+    fn translation_matrix_structure() {
+        let transform = Translation::new(5., -3., 2.);
+        assert_eq!(
+            transform,
+            Matrix4x4::new(
+                [1., 0., 0., 5.],
+                [0., 1., 0., -3.],
+                [0., 0., 1., 2.],
+                [0., 0., 0., 1.]
+            )
+        );
+    }
+
+    #[test]
+    fn multiplying_a_translation_matrix() {
+        let transform = Translation::new(5., -3., 2.);
+        let point = Point::new(-3., 4., 5.);
+        assert_eq!(transform * point, Point::new(2., 1., 7.));
+    }
+
+    #[test]
+    fn multiplying_by_inverse_of_translation() {
+        let transform = Translation::new(5., -3., 2.);
+        let inverse = transform.inverse().unwrap();
+        let point = Point::new(-3., 4., 5.);
+        assert_eq!(inverse * point, Point::new(-8., 7., 3.));
+    }
+
+    #[test]
+    fn translation_does_not_affect_vectors() {
+        let transform = Translation::new(5., -3., 2.);
+        let v = Vector::new(-3., 4., 5.);
+        assert_eq!(transform * v, v);
     }
 }
