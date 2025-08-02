@@ -40,19 +40,19 @@ fn tick(proj: Projectile, env: &Environment) -> Projectile {
 }
 
 fn main() {
-    // create_projectile_image();
-    let m = Matrix4x4::new(
-        [1., 0., 0., 0.],
-        [2., 1., 0., 0.],
-        [0., 0., 1., 0.],
-        [0., 0., 0., 1.],
-    );
-
-    let t = Tuple::new(1., 2., 3., 4.);
-
-    let c = m * t;
-
-    println!("{:?}", &c);
+    create_projectile_image();
+    // let m = Matrix4x4::new(
+    //     [1., 0., 0., 0.],
+    //     [2., 1., 0., 0.],
+    //     [0., 0., 1., 0.],
+    //     [0., 0., 0., 1.],
+    // );
+    //
+    // let t = Tuple::new(1., 2., 3., 4.);
+    //
+    // let c = m * t;
+    //
+    // println!("{:?}", &c);
 }
 
 fn create_projectile_image() {

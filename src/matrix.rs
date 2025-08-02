@@ -167,6 +167,14 @@ impl Mul<Point> for Matrix4x4 {
     }
 }
 
+impl Mul<Matrix4x4> for Point {
+    type Output = Point;
+
+    fn mul(self, rhs: Matrix4x4) -> Self::Output {
+        Point::from(rhs * Tuple::from(self))
+    }
+}
+
 impl Mul<Vector> for Matrix4x4 {
     type Output = Vector;
 

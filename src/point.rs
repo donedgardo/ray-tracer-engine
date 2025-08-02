@@ -80,6 +80,8 @@ impl From<Point> for Tuple {
     }
 }
 
+
+
 #[cfg(test)]
 mod point_tests {
     use crate::point::Point;
