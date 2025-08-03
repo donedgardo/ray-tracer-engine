@@ -1,14 +1,11 @@
 use crate::canvas::Canvas;
 use crate::color::Color;
 use crate::coord::Coord;
-use crate::matrix::Matrix4x4;
 use crate::point::Point;
 use crate::ppm_image::PPM;
-use crate::tuple::Tuple;
 use crate::vector::Vector;
 use std::fs::File;
 use std::io::Write;
-use std::ops::{Index, Mul};
 
 mod canvas;
 mod color;
