@@ -214,8 +214,8 @@ impl Scaling {
 
     pub fn inverse(&self) -> Option<Self> {
         match self.0.inverse() {
-            None => { None }
-            Some(inverse) => { Some(Self(inverse))}
+            None => None,
+            Some(inverse) => Some(Self(inverse)),
         }
     }
 }
@@ -719,8 +719,6 @@ mod matrix_arithmetics {
         let v = Vector::new(-3., 4., 5.);
         assert_eq!(transform * v, v);
     }
-
-
 }
 
 #[cfg(test)]
@@ -756,8 +754,5 @@ mod scaling_tests {
         let transform = Scaling::new(-1., 1., 1.);
         let point = Point::new(2., 3., 4.);
         assert_eq!(transform * point, Point::new(-2., 3., 4.));
-
     }
-
 }
-

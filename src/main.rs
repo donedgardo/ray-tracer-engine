@@ -14,6 +14,7 @@ mod float_eq;
 mod matrix;
 mod point;
 mod ppm_image;
+mod rotation;
 mod tuple;
 mod vector;
 
