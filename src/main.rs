@@ -15,6 +15,7 @@ mod matrix;
 mod point;
 mod ppm_image;
 mod rotation;
+mod transform;
 mod tuple;
 mod vector;
 
