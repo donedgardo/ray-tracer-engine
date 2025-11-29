@@ -11,11 +11,8 @@ mod canvas;
 mod color;
 mod coord;
 mod float_eq;
-mod matrix;
 mod point;
 mod ppm_image;
-mod rotation;
-mod transform;
 mod tuple;
 mod vector;
 
