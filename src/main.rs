@@ -13,6 +13,7 @@ mod coord;
 mod float_eq;
 mod point;
 mod ppm_image;
+mod transforms;
 mod tuple;
 mod vector;
 
@@ -37,18 +38,6 @@ fn tick(proj: Projectile, env: &Environment) -> Projectile {
 
 fn main() {
     create_projectile_image();
-    // let m = Matrix4x4::new(
-    //     [1., 0., 0., 0.],
-    //     [2., 1., 0., 0.],
-    //     [0., 0., 1., 0.],
-    //     [0., 0., 0., 1.],
-    // );
-    //
-    // let t = Tuple::new(1., 2., 3., 4.);
-    //
-    // let c = m * t;
-    //
-    // println!("{:?}", &c);
 }
 
 fn create_projectile_image() {
@@ -75,6 +64,6 @@ fn create_projectile_image() {
     println!("Projectile touched ground after {} ticks.", tick_count);
 
     let image_output = PPM::generate(&canvas);
-    let mut file = File::create("projectile.pmp").unwrap();
+    let mut file = File::create("projectile.ppm").unwrap();
     file.write_all(image_output.as_bytes()).unwrap();
 }

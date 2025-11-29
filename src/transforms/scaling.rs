@@ -1,10 +1,8 @@
-use crate::matrix::Matrix4x4;
 use crate::point::Point;
+use crate::transforms::matrix::Matrix4x4;
 use crate::tuple::Tuple;
 use crate::vector::Vector;
 use std::ops::Mul;
-
-pub struct Shearing;
 
 pub struct Scaling(Matrix4x4);
 impl Scaling {
@@ -40,10 +38,26 @@ impl Mul<Vector> for Scaling {
     }
 }
 
+impl Mul<Matrix4x4> for Scaling {
+    type Output = Matrix4x4;
+
+    fn mul(self, rhs: Matrix4x4) -> Self::Output {
+        self.0 * rhs
+    }
+}
+
+impl Mul<Scaling> for Matrix4x4 {
+    type Output = Matrix4x4;
+
+    fn mul(self, rhs: Scaling) -> Self::Output {
+        self * rhs.0
+    }
+}
+
 #[cfg(test)]
 mod scaling_tests {
     use crate::point::Point;
-    use crate::transform::Scaling;
+    use crate::transforms::scaling::Scaling;
     use crate::vector::Vector;
 
     #[test]

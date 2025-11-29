@@ -189,18 +189,6 @@ impl Mul<Vector> for Matrix4x4 {
     }
 }
 
-struct Translation;
-
-impl Translation {
-    pub fn new(x: f32, y: f32, z: f32) -> Matrix4x4 {
-        let mut tranlation = Matrix4x4::identity();
-        tranlation.data[0][3] = x;
-        tranlation.data[1][3] = y;
-        tranlation.data[2][3] = z;
-        tranlation
-    }
-}
-
 #[derive(Debug)]
 pub struct Matrix3x3 {
     data: [[f32; 3]; 3],
@@ -300,7 +288,7 @@ where
 
 #[cfg(test)]
 mod matrix_tests {
-    use crate::matrix::{Matrix2x2, Matrix3x3, Matrix4x4};
+    use crate::transforms::matrix::{Matrix2x2, Matrix3x3, Matrix4x4};
     use rstest::rstest;
 
     #[rstest]
@@ -411,10 +399,8 @@ mod matrix_tests {
 
 #[cfg(test)]
 mod matrix_arithmetics {
-    use crate::matrix::{Matrix2x2, Matrix3x3, Matrix4x4, Translation};
-    use crate::point::Point;
+    use crate::transforms::matrix::{Matrix2x2, Matrix3x3, Matrix4x4};
     use crate::tuple::Tuple;
-    use crate::vector::Vector;
 
     #[test]
     fn multiplication_other_matrix() {
@@ -439,6 +425,7 @@ mod matrix_arithmetics {
 
         assert_eq!(m4x4 * om4x4, expected);
     }
+
     #[test]
     fn multiplication_other_tuple() {
         let m = Matrix4x4::new(
@@ -462,6 +449,7 @@ mod matrix_arithmetics {
         );
         assert_eq!(m * Matrix4x4::identity(), m)
     }
+
     #[test]
     fn multiply_identity_matrix_by_tuple() {
         let tuple = Tuple::new(1., 2., 3., 4.);
@@ -564,6 +552,7 @@ mod matrix_arithmetics {
         assert_eq!(m.determinant(), -2120.);
         assert!(m.is_invertible());
     }
+
     #[test]
     fn invertible_matrix() {
         let m = Matrix4x4::new(
@@ -647,41 +636,5 @@ mod matrix_arithmetics {
         );
         let c = a * b;
         assert_eq!(c * b.inverse().unwrap(), a);
-    }
-
-    #[test]
-    fn translation_matrix_structure() {
-        let transform = Translation::new(5., -3., 2.);
-        assert_eq!(
-            transform,
-            Matrix4x4::new(
-                [1., 0., 0., 5.],
-                [0., 1., 0., -3.],
-                [0., 0., 1., 2.],
-                [0., 0., 0., 1.]
-            )
-        );
-    }
-
-    #[test]
-    fn multiplying_a_translation_matrix() {
-        let transform = Translation::new(5., -3., 2.);
-        let point = Point::new(-3., 4., 5.);
-        assert_eq!(transform * point, Point::new(2., 1., 7.));
-    }
-
-    #[test]
-    fn multiplying_by_inverse_of_translation() {
-        let transform = Translation::new(5., -3., 2.);
-        let inverse = transform.inverse().unwrap();
-        let point = Point::new(-3., 4., 5.);
-        assert_eq!(inverse * point, Point::new(-8., 7., 3.));
-    }
-
-    #[test]
-    fn translation_does_not_affect_vectors() {
-        let transform = Translation::new(5., -3., 2.);
-        let v = Vector::new(-3., 4., 5.);
-        assert_eq!(transform * v, v);
     }
 }

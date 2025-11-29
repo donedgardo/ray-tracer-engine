@@ -1,5 +1,6 @@
-use crate::matrix::Matrix4x4;
-struct Rotation;
+use crate::transforms::matrix::Matrix4x4;
+
+pub(crate) struct Rotation;
 impl Rotation {
     pub fn x(radians: f32) -> Matrix4x4 {
         Matrix4x4::new(
@@ -34,7 +35,7 @@ pub fn degree_to_radians(degrees: f32) -> f32 {
 #[cfg(test)]
 mod rotation_tests {
     use crate::point::Point;
-    use crate::rotation::Rotation;
+    use crate::transforms::rotation::Rotation;
     use std::f32::consts::{FRAC_PI_2, FRAC_PI_4};
 
     #[test]
@@ -101,7 +102,7 @@ mod rotation_tests {
 
 #[cfg(test)]
 mod degree_to_radians_test {
-    use crate::rotation::degree_to_radians;
+    use crate::transforms::rotation::degree_to_radians;
     use std::f32::consts::PI;
 
     #[test]

@@ -1,5 +1,6 @@
-use crate::Shearing;
+use crate::transforms::matrix::Matrix4x4;
 
+pub struct Shearing;
 impl Shearing {
     pub fn new(xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> Matrix4x4 {
         Matrix4x4::new(
@@ -14,7 +15,7 @@ impl Shearing {
 #[cfg(test)]
 mod shearing_tests {
     use crate::point::Point;
-    use crate::transform::Shearing;
+    use crate::transforms::shearing::Shearing;
     use rstest::rstest;
 
     #[test]
