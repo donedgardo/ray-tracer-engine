@@ -4,7 +4,7 @@ use crate::tuple::Tuple;
 use crate::vector::Vector;
 use std::ops::{Add, Sub};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Point(Tuple);
 
 impl Point {
@@ -79,8 +79,6 @@ impl From<Point> for Tuple {
         Tuple::new(value.x(), value.y(), value.z(), 1.)
     }
 }
-
-
 
 #[cfg(test)]
 mod point_tests {

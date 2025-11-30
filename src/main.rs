@@ -3,6 +3,7 @@ use crate::color::Color;
 use crate::coord::Coord;
 use crate::point::Point;
 use crate::ppm_image::PPM;
+use crate::transforms::{Transform, Transformable};
 use crate::vector::Vector;
 use std::fs::File;
 use std::io::Write;
@@ -13,6 +14,7 @@ mod coord;
 mod float_eq;
 mod point;
 mod ppm_image;
+mod rays;
 mod transforms;
 mod tuple;
 mod vector;
@@ -27,17 +29,27 @@ struct Environment {
     gravity: Vector,
 }
 
-fn tick(proj: Projectile, env: &Environment) -> Projectile {
-    let transform = proj.transform + proj.velocity;
-    let velocity = proj.velocity + env.gravity + env.winds;
-    return Projectile {
-        transform,
-        velocity,
-    };
+fn main() {
+    draw_clock();
+    create_projectile_image();
 }
 
-fn main() {
-    create_projectile_image();
+fn draw_clock() {
+    let size: f32 = 120.;
+    let mut canvas = Canvas::new(size as u32, size as u32);
+    let hand_length: f32 = size * (3. / 8.);
+    for hour in 0..12 {
+        let hour_angle = std::f32::consts::FRAC_PI_6 * hour as f32;
+        let hour_hand_end = Point::new(0., 0., 1.);
+        let transform = Transform::identity().rotate_y(hour_angle);
+        let point = transform * hour_hand_end;
+        let point = Point::new(point.x() * hand_length, point.y(), point.z() * hand_length);
+        let point = point + Vector::new(size / 2., 0., size / 2.);
+        canvas.write_pixel(point.x() as u32, point.z() as u32, Color::new(1., 0., 0.));
+    }
+    let image_output = PPM::generate(&canvas);
+    let mut file = File::create("clock.ppm").unwrap();
+    file.write_all(image_output.as_bytes()).unwrap();
 }
 
 fn create_projectile_image() {
@@ -66,4 +78,13 @@ fn create_projectile_image() {
     let image_output = PPM::generate(&canvas);
     let mut file = File::create("projectile.ppm").unwrap();
     file.write_all(image_output.as_bytes()).unwrap();
+}
+
+fn tick(proj: Projectile, env: &Environment) -> Projectile {
+    let transform = proj.transform + proj.velocity;
+    let velocity = proj.velocity + env.gravity + env.winds;
+    return Projectile {
+        transform,
+        velocity,
+    };
 }
