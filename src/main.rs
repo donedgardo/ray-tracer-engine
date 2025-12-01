@@ -12,6 +12,7 @@ mod canvas;
 mod color;
 mod coord;
 mod float_eq;
+mod intersection;
 mod point;
 mod ppm_image;
 mod rays;

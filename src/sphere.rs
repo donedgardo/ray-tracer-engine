@@ -1,6 +1,8 @@
+use crate::intersection::Intersection;
 use crate::point::Point;
 use crate::rays::Ray;
 
+#[derive(PartialEq, Debug)]
 pub struct Sphere {
     id: u32,
 }
@@ -9,7 +11,12 @@ impl Sphere {
     pub fn new(id: u32) -> Self {
         Self { id }
     }
-    pub fn intersect(&self, r: &Ray) -> Vec<f32> {
+
+    pub fn id(&self) -> u32 {
+        self.id
+    }
+
+    pub fn intersect(&self, r: &Ray) -> Vec<Intersection> {
         let sphere_to_ray = r.origin().clone() - Point::new(0., 0., 0.);
         let a = r.direction().dot(&r.direction());
         let b = 2. * r.direction().dot(&sphere_to_ray);
@@ -20,7 +27,7 @@ impl Sphere {
         }
         let t1 = (-b - discriminant.sqrt()) / (2. * a);
         let t2 = (-b + discriminant.sqrt()) / (2. * a);
-        vec![t1, t2]
+        vec![Intersection::new(t1, &self), Intersection::new(t2, &self)]
     }
 }
 
@@ -31,6 +38,12 @@ mod sphere_tests {
     use crate::rays::Ray;
     use crate::sphere::Sphere;
     use crate::vector::Vector;
+
+    #[test]
+    fn sphere_has_id() {
+        let s = Sphere::new(1);
+        assert_eq!(s.id(), 1);
+    }
 
     #[test]
     fn ray_misses_sphere() {
@@ -46,8 +59,8 @@ mod sphere_tests {
         let s = Sphere::new(1);
         let xs = s.intersect(&r);
         assert_eq!(xs.len(), 2);
-        assert!(f32_are_eq(xs[0], 4.));
-        assert!(f32_are_eq(xs[1], 6.));
+        assert!(f32_are_eq(xs[0].t(), 4.));
+        assert!(f32_are_eq(xs[1].t(), 6.));
     }
 
     #[test]
@@ -56,8 +69,8 @@ mod sphere_tests {
         let s = Sphere::new(1);
         let xs = s.intersect(&r);
         assert_eq!(xs.len(), 2);
-        assert!(f32_are_eq(xs[0], 5.));
-        assert!(f32_are_eq(xs[1], 5.));
+        assert!(f32_are_eq(xs[0].t(), 5.));
+        assert!(f32_are_eq(xs[1].t(), 5.));
     }
 
     #[test]
@@ -66,8 +79,8 @@ mod sphere_tests {
         let s = Sphere::new(1);
         let xs = s.intersect(&r);
         assert_eq!(xs.len(), 2);
-        assert!(f32_are_eq(xs[0], -1.));
-        assert!(f32_are_eq(xs[1], 1.));
+        assert!(f32_are_eq(xs[0].t(), -1.));
+        assert!(f32_are_eq(xs[1].t(), 1.));
     }
 
     #[test]
@@ -76,7 +89,17 @@ mod sphere_tests {
         let s = Sphere::new(1);
         let xs = s.intersect(&r);
         assert_eq!(xs.len(), 2);
-        assert!(f32_are_eq(xs[0], -6.));
-        assert!(f32_are_eq(xs[1], -4.));
+        assert!(f32_are_eq(xs[0].t(), -6.));
+        assert!(f32_are_eq(xs[1].t(), -4.));
+    }
+
+    #[test]
+    fn intersect_set_object_id() {
+        let r = Ray::new(Point::new(0., 0., 5.), Vector::new(0., 0., 1.));
+        let s = Sphere::new(1);
+        let xs = s.intersect(&r);
+        assert_eq!(xs.len(), 2);
+        assert_eq!(xs[0].object_id(), 1);
+        assert_eq!(xs[1].object_id(), 1);
     }
 }
