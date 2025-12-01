@@ -1,7 +1,7 @@
 use crate::point::Point;
 use crate::vector::Vector;
 
-struct Ray {
+pub struct Ray {
     origin: Point,
     direction: Vector,
 }

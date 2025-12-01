@@ -15,6 +15,7 @@ mod float_eq;
 mod point;
 mod ppm_image;
 mod rays;
+mod sphere;
 mod transforms;
 mod tuple;
 mod vector;
