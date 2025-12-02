@@ -185,7 +185,7 @@ impl Mul<Vector> for Matrix4x4 {
     type Output = Vector;
 
     fn mul(self, rhs: Vector) -> Self::Output {
-        rhs
+        Vector::from(self * Tuple::from(rhs))
     }
 }
 
