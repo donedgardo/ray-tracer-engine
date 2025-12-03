@@ -14,6 +14,9 @@ impl Transform {
     pub fn identity() -> Matrix4x4 {
         Matrix4x4::identity()
     }
+    pub fn new() -> Matrix4x4 {
+        Matrix4x4::identity()
+    }
 }
 
 pub trait Transformable {
