@@ -1,6 +1,6 @@
 use crate::sphere::Sphere;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Intersection {
     t: f32,
     object_id: u32,
@@ -22,7 +22,7 @@ impl Intersection {
     }
 }
 
-pub fn hit(intersections: Vec<&Intersection>) -> Option<&Intersection> {
+pub fn hit(intersections: &Vec<Intersection>) -> Option<&Intersection> {
     let hit = None;
     if intersections.is_empty() {
         return hit;
@@ -30,7 +30,7 @@ pub fn hit(intersections: Vec<&Intersection>) -> Option<&Intersection> {
     let mut positive_intersections = intersections
         .iter()
         .filter(|i| i.t() >= 0.)
-        .collect::<Vec<&&Intersection>>();
+        .collect::<Vec<&Intersection>>();
     if positive_intersections.is_empty() {
         return hit;
     }
@@ -49,8 +49,8 @@ mod hits_tests {
         let s = Sphere::new(1);
         let i1 = Intersection::new(1., &s);
         let i2 = Intersection::new(2., &s);
-        let xs = vec![&i1, &i2];
-        let i = hit(xs).unwrap();
+        let xs = vec![i1.clone(), i2.clone()];
+        let i = hit(&xs).unwrap();
         assert_eq!(&i1, i);
     }
     #[test]
@@ -58,8 +58,8 @@ mod hits_tests {
         let s = Sphere::new(1);
         let i1 = Intersection::new(-1., &s);
         let i2 = Intersection::new(1., &s);
-        let xs = vec![&i1, &i2];
-        let i = hit(xs).unwrap();
+        let xs = vec![i1.clone(), i2.clone()];
+        let i = hit(&xs).unwrap();
         assert_eq!(&i2, i);
     }
 
@@ -68,8 +68,8 @@ mod hits_tests {
         let s = Sphere::new(1);
         let i1 = Intersection::new(-2., &s);
         let i2 = Intersection::new(-1., &s);
-        let xs = vec![&i1, &i2];
-        let i = hit(xs);
+        let xs = vec![i1.clone(), i2.clone()];
+        let i = hit(&xs);
         assert_eq!(None, i);
     }
     #[test]
@@ -79,8 +79,8 @@ mod hits_tests {
         let i2 = Intersection::new(7., &s);
         let i3 = Intersection::new(-3., &s);
         let i4 = Intersection::new(2., &s);
-        let xs = vec![&i1, &i2, &i3, &i4];
-        let i = hit(xs).unwrap();
+        let xs = vec![i1.clone(), i2.clone(), i3.clone(), i4.clone()];
+        let i = hit(&xs).unwrap();
         assert_eq!(&i4, i);
     }
 }

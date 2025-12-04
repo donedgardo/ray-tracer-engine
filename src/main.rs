@@ -7,6 +7,9 @@ use crate::transforms::{Transform, Transformable};
 use crate::vector::Vector;
 use std::fs::File;
 use std::io::Write;
+use crate::intersection::{hit, Intersection};
+use crate::rays::Ray;
+use crate::sphere::Sphere;
 
 mod canvas;
 mod color;
@@ -32,8 +35,42 @@ struct Environment {
 }
 
 fn main() {
-    draw_clock();
     create_projectile_image();
+    draw_clock();
+    draw_circle();
+}
+
+fn draw_circle() {
+    let size: f32 = 240.;
+    let wall_z = 10.;
+    let wall_size: f32 = 7.;
+    let wall_pixel_size = wall_size / size;
+    let ray_origin = Point::new(0., 0., -10.);
+    let half = wall_size / 2.;
+    let mut canvas = Canvas::new(size as u32, size as u32);
+    let mut sphere = Sphere::new(1);
+    for y in 0..(size as usize) {
+        for x in 0..(size as usize) {
+            let world_y = half - wall_pixel_size * y as f32;
+            let world_x = -half + wall_pixel_size * x as f32;
+            let position = Point::new(world_x, world_y, wall_z);
+            let vector: Vector = (position - ray_origin.clone()).into();
+            let ray = Ray::new(ray_origin.clone(), vector);
+            let xs = sphere.intersect(&ray);
+            // refactor Idea: I think hit should be a method of xs (new struct for vec<intersection>)
+            let h = hit(&xs);
+            match h {
+                None => {}
+                Some(_) => {
+                    canvas.write_pixel(x as u32, y as u32, Color::new(1., 0., 0.));
+                }
+            }
+
+        }
+    }
+    let image_output = PPM::generate(&canvas);
+    let mut file = File::create("circle.ppm").unwrap();
+    file.write_all(image_output.as_bytes()).unwrap();
 }
 
 fn draw_clock() {
